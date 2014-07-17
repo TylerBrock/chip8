@@ -46,7 +46,7 @@ namespace Chip8 {
 
             _graphics->refresh();
 
-            SDL_Delay(1000);
+            SDL_Delay(100);
         }
     }
 

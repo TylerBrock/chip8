@@ -39,6 +39,7 @@ namespace Chip8 {
         Address a = op & kOpCodeMask;
         uint8_t rx = (op & kRegisterXMask) >> 8;
         uint8_t ry = (op & kRegisterYMask) >> 4;
+        uint8_t last_byte = op & 0x0FF;
 
         // Run instruction
         switch (op & kOpCodeMask) {
@@ -130,8 +131,15 @@ namespace Chip8 {
                 break;
             }
 
+            case 0xE000:
+                switch (last_byte) {
+                    //case 0xA1:
+                        //uint8_t key = _registers[rx];
+                }
+                _program_counter += 2;
+                break;
+
             case 0xF000:
-                uint8_t last_byte = op & 0x00FF;
                 int mod = 100;
                 switch (last_byte) {
                     case 0x07:
