@@ -94,6 +94,11 @@ namespace Chip8 {
                 _program_counter += 2;
                 break;
 
+            case 0x8000:
+                // 8xxx
+                _program_counter += 2;
+                break;
+
             case 0xA000:
                 _index_register = (op & kAddressMask);
                 _program_counter += 2;
