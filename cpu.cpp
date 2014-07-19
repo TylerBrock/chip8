@@ -95,7 +95,44 @@ namespace Chip8 {
                 break;
 
             case 0x8000:
-                // 8xxx
+                switch (op & kLastNibble) {
+                    case 0x0:
+                        // Sets VX to the value of VY
+                        _registers[rx] = _registers[ry];
+                        break;
+                    case 0x1:
+                        // Sets VX to VX OR VY
+                        _registers[rx] |= _registers[ry];
+                        break;
+                    case 0x2:
+                        // Sets VX to VX AND VY
+                        _registers[rx] &= _registers[ry];
+                        break;
+                    case 0x3:
+                        // Sets VX to VX XOR VY
+                        _registers[rx] ^= _registers[ry];
+                        break;
+                    case 0x4:
+                        // Adds VY to VX, VF is set to carry
+                        _registers[rx] += _registers[ry];
+                        break;
+                    case 0x5:
+                        // VY is subtracted from VX, VF is set to zero when there is a borrow
+                        _registers[rx] -= _registers[ry];
+                        break;
+                    case 0x6:
+                        // Shifts VX right by one, VF set to least significant bit before shift
+                        _registers[rx] >>= 1;
+                        break;
+                    case 0x7:
+                        // Sets VX to VY minus VX, VF is set to zero when there is a borrow
+                        _registers[rx] = _registers[ry] - _registers[rx];
+                        break;
+                    case 0xE:
+                        // Shifts VX left by one, VF set to most significant bit before shift
+                        _registers[rx] <<= 1;
+                        break;
+                }
                 _program_counter += 2;
                 break;
 
