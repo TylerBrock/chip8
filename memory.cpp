@@ -35,7 +35,7 @@ namespace Chip8 {
     }
 
     uint8_t Memory::getByte(int location) {
-        std::cout << "accessing 0x" << std::hex << location << std::endl;
+        //std::cout << "accessing 0x" << std::hex << location << std::endl;
         return memory[location];
     }
 

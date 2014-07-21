@@ -40,13 +40,13 @@ namespace Chip8 {
             while (SDL_PollEvent(&event)) {
                 if (event.type == SDL_QUIT)
                     quit = true;
-                if (event.type == SDL_KEYDOWN)
-                    quit = true;
+                //if (event.type == SDL_KEYDOWN)
+                //    quit = true;
             }
 
             _graphics->refresh();
 
-            SDL_Delay(100);
+            SDL_Delay(1000);
         }
     }
 

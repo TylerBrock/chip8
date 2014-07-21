@@ -14,6 +14,13 @@ namespace Chip8 {
     const uint16_t kImmediateMask = 0x00FF;
     const uint16_t kLastNibble = 0x000F;
 
+    const SDL_Keycode kKeyCodeMap[16] = {
+        SDLK_0, SDLK_1, SDLK_2, SDLK_3,
+        SDLK_4, SDLK_5, SDLK_6, SDLK_7,
+        SDLK_8, SDLK_9, SDLK_a, SDLK_b,
+        SDLK_c, SDLK_d, SDLK_e, SDLK_f,
+    };
+
     CPU::CPU(Graphics* g, Memory* m) : _g(g), _m(m) {
         reset();
     }
@@ -112,24 +119,31 @@ namespace Chip8 {
                         // Sets VX to VX XOR VY
                         _registers[rx] ^= _registers[ry];
                         break;
-                    case 0x4:
+                    case 0x4: {
                         // Adds VY to VX, VF is set to carry
-                        _registers[rx] += _registers[ry];
+                        uint16_t sum = _registers[rx] + _registers[ry];
+                        _registers[0xF] = (sum > 0xFF) ? 1 : 0;
+                        _registers[rx] = sum % 0xFF;
                         break;
+                    }
                     case 0x5:
                         // VY is subtracted from VX, VF is set to zero when there is a borrow
+                        _registers[0xF] = (_registers[ry] > _registers[rx] ? 0 : 1);
                         _registers[rx] -= _registers[ry];
                         break;
                     case 0x6:
                         // Shifts VX right by one, VF set to least significant bit before shift
+                        _registers[0xF] = _registers[rx] & 0x0001;
                         _registers[rx] >>= 1;
                         break;
                     case 0x7:
                         // Sets VX to VY minus VX, VF is set to zero when there is a borrow
+                        _registers[0xF] = (_registers[rx] > _registers[ry] ? 0 : 1);
                         _registers[rx] = _registers[ry] - _registers[rx];
                         break;
                     case 0xE:
                         // Shifts VX left by one, VF set to most significant bit before shift
+                        _registers[0xF] = (_registers[rx] & 0x8000) >> 8;
                         _registers[rx] <<= 1;
                         break;
                 }
@@ -160,8 +174,8 @@ namespace Chip8 {
                     uint8_t sprite_mask = 0x80;
                     uint8_t sprite_row = _m->getByte(sprite_pointer + i);
 
-                    std::cout << "[cpu] Current sprite pointer: " << (int)sprite_pointer + i << std::endl;
-                    std::cout << "[cpu] Current sprite row: " << (int)sprite_row << std::endl;
+                    //std::cout << "[cpu] Current sprite pointer: " << (int)sprite_pointer + i << std::endl;
+                    //std::cout << "[cpu] Current sprite row: " << (int)sprite_row << std::endl;
 
                     for (int j=0; j<8; j++) {
                         if (sprite_row & sprite_mask)
@@ -175,8 +189,20 @@ namespace Chip8 {
 
             case 0xE000:
                 switch (last_byte) {
-                    //case 0xA1:
-                        //uint8_t key = _registers[rx];
+                    case 0xA1: {
+                        // Skip the following instruction if the key corresponding to the hex value
+                        // currently stored in register VX is not pressed.
+                        uint8_t key = _registers[rx];
+                        SDL_Event event;
+                        while (SDL_PollEvent(&event)) {
+                            if (event.type == SDL_KEYDOWN) {
+                                if(event.key.keysym.sym == kKeyCodeMap[key]) {
+                                    std::cout << "skipping" << std::endl;
+                                    _program_counter += 2;
+                                }
+                            }
+                        }
+                    }
                 }
                 _program_counter += 2;
                 break;

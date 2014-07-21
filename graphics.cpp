@@ -38,7 +38,7 @@ namespace Chip8 {
     }
 
     void Graphics::set(int x, int y, bool value) {
-        std::cout << "[graphics] settingx: " << x << " settingy: " << y << std::endl;
+        //std::cout << "[graphics] settingx: " << x << " settingy: " << y << std::endl;
         gfx[(kGraphicsWidth * y) + x - 1] = value;
     }
 
