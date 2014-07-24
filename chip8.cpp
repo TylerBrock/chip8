@@ -35,18 +35,22 @@ namespace Chip8 {
         SDL_Event event;
 
         while (!quit) {
-            _cpu->run_cycle();
+                        _cpu->run_cycle();
+                        _graphics->refresh();
 
             while (SDL_PollEvent(&event)) {
                 if (event.type == SDL_QUIT)
                     quit = true;
-                //if (event.type == SDL_KEYDOWN)
-                //    quit = true;
+                if (event.type == SDL_KEYDOWN) {
+                    if (event.key.keysym.sym == SDLK_s) {
+                    }
+                    if (event.key.keysym.sym == SDLK_q) {
+                        quit = true;
+                    }
+                }
             }
 
-            _graphics->refresh();
-
-            SDL_Delay(1000);
+            SDL_Delay(16);
         }
     }
 

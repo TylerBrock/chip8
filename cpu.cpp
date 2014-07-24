@@ -43,7 +43,7 @@ namespace Chip8 {
         std::cout << "Operation at 0x" << std::hex << _program_counter << " -> "
             << std::setw(4) << int(op) << std::endl;
 
-        Address a = op & kOpCodeMask;
+        Address a = op & kAddressMask;
         uint8_t rx = (op & kRegisterXMask) >> 8;
         uint8_t ry = (op & kRegisterYMask) >> 4;
         uint8_t last_byte = op & 0x0FF;
@@ -71,7 +71,7 @@ namespace Chip8 {
                 break;
 
             case 0x3000:
-                if (rx == (op & kImmediateMask))
+                if (_registers[rx] == (op & kImmediateMask))
                     _program_counter += 4;
                 else
                     _program_counter += 2;
@@ -132,9 +132,10 @@ namespace Chip8 {
                         _registers[rx] -= _registers[ry];
                         break;
                     case 0x6:
-                        // Shifts VX right by one, VF set to least significant bit before shift
-                        _registers[0xF] = _registers[rx] & 0x0001;
-                        _registers[rx] >>= 1;
+                        // Shifts VY right by one and stores the result in VX, VF set to least
+                        // significant bit before shift
+                        _registers[0xF] = _registers[ry] & 0x0001;
+                        _registers[rx] = _registers[ry] >> 1;
                         break;
                     case 0x7:
                         // Sets VX to VY minus VX, VF is set to zero when there is a borrow
@@ -142,9 +143,10 @@ namespace Chip8 {
                         _registers[rx] = _registers[ry] - _registers[rx];
                         break;
                     case 0xE:
-                        // Shifts VX left by one, VF set to most significant bit before shift
-                        _registers[0xF] = (_registers[rx] & 0x8000) >> 8;
-                        _registers[rx] <<= 1;
+                        // Shifts VY left by one and stores result in VX, VF set to most
+                        // significant bit before shift
+                        _registers[0xF] = (_registers[ry] & 0x8000) >> 8;
+                        _registers[rx] = _registers[ry] << 1;
                         break;
                 }
                 _program_counter += 2;
@@ -211,19 +213,24 @@ namespace Chip8 {
                 int mod = 100;
                 switch (last_byte) {
                     case 0x07:
+                        // Store the current value of the delay timer in register VX
                         _registers[rx] = _delay_timer;
                         break;
 
                     case 0x15:
+                        // Set the delay timer to the value of register VX
                         _delay_timer = _registers[rx];
                         break;
 
                     case 0x29:
-                        // set index register to location of font for vx
+                        // Set index register to location of font for hex digit in VX
                         _index_register = _m->getFontLocation() + _registers[rx];
                         break;
 
                     case 0x33:
+                        // Store the binary-coded decimal equivalent of the value stored in
+                        // register VX into subsequent memory addresses starting at the address
+                        // currently in the index register.
                         for (int i=0; i<3; i++) {
                             _m->putByte(_index_register + i, _registers[rx] % mod);
                             mod /= 10;
@@ -231,11 +238,25 @@ namespace Chip8 {
                         break;
 
                     case 0x65:
+                        // Fill registers V0 to VX inclusive with the values stored in memory
+                        // starting at the address currently in the index register.
                         for (int i=0; i<=rx; i++)
                             _registers[i] = _m->getByte(_index_register + i);
                         break;
+                        // TODO: set index register to index register + x + 1 after this?
                 }
                 _program_counter += 2;
+        }
+
+        // Decrement the timers -- because the timers run at the same clock rate as the CPU
+        // itself (60hz) this is totally fine.
+        // TODO: skip decrement on cycle when timers are set
+        if (_delay_timer > 0) {
+            _delay_timer--;
+        }
+
+        if (_sound_timer > 0) {
+            _sound_timer--;
         }
     }
 
@@ -252,7 +273,7 @@ namespace Chip8 {
         std::cout << std::endl;
 
         std::cout << "pc: 0x" << std::setw(3) << int(_program_counter) << std::endl
-                  << "ir: 0x" << std::setw(3) << int(_index_register) << std::endl
+                  << "ix: 0x" << std::setw(3) << int(_index_register) << std::endl
                   << "sp: 0x" << std::setw(3) << int(_stack_pointer) << std::endl
                   << "dt: 0x" << std::setw(2) << int(_delay_timer) << std::endl
                   << "st: 0x" << std::setw(2) << int(_sound_timer) << std::endl;
