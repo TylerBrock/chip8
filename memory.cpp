@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <iomanip>
 #include "memory.h"
@@ -26,14 +27,8 @@ namespace Chip8 {
     };
 
     Memory::Memory() {
-        // TODO: use memset
-        for (int i=0; i<(kMemorySize); i++)
-            memory[i] = 0;
-
-        // TODO: use memcpy
-        for (int i=0; i<16; i++) {
-            memory[kFontSetLocation + i] = kFontSet[i];
-        }
+        std::fill_n(memory, sizeof(memory), 0);
+        std::copy(kFontSet, kFontSet + sizeof(kFontSet), &memory[kFontSetLocation]);
     }
 
     uint8_t Memory::getByte(int location) {

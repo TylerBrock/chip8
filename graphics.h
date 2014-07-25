@@ -17,7 +17,7 @@ namespace Chip8 {
         void refresh();
 
     private:
-        bool gfx[64 * 32];
+        bool _gfx[64 * 32];
         bool _dirty_buffer;
         SDL_Window* _window;
         SDL_Renderer* _renderer;

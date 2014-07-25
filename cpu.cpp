@@ -32,9 +32,7 @@ namespace Chip8 {
         _stack_pointer = 0;
         _index_register = 0;
 
-        for (int i=0; i<16; i++) {
-            _registers[i] = 0;
-        }
+        std::fill_n(_registers, sizeof(_registers), 0);
     }
 
     void CPU::run_cycle() {

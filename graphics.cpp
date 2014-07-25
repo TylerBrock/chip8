@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include "graphics.h"
 
 namespace Chip8 {
@@ -41,13 +42,13 @@ namespace Chip8 {
 
     void Graphics::set(int x, int y, bool value) {
         //std::cout << "[graphics] settingx: " << x << " settingy: " << y << std::endl;
-        gfx[(kGraphicsWidth * y) + x - 1] = value;
+        _gfx[(kGraphicsWidth * y) + x - 1] = value;
 
         _dirty_buffer = true;
     }
 
     bool Graphics::get(int x, int y) const {
-        return gfx[(kGraphicsWidth * y) + x - 1];
+        return _gfx[(kGraphicsWidth * y) + x - 1];
     }
 
     bool Graphics::dirty() const {
@@ -68,7 +69,7 @@ namespace Chip8 {
                 kGraphicsScale
             };
 
-            if (gfx[pixel]) {
+            if (_gfx[pixel]) {
                 SDL_SetRenderDrawColor(_renderer, 255, 255, 255, 255);
             } else {
                 SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
@@ -83,10 +84,7 @@ namespace Chip8 {
     }
 
     void Graphics::clear() {
-        // TODO: use memset
-        for (int i=0; i<kGraphicsWidth * kGraphicsHeight; i++)
-            gfx[i] = false;
-
+        std::fill_n(_gfx, sizeof(_gfx), 0);
         _dirty_buffer = true;
     }
 
