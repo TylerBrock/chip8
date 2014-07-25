@@ -11,6 +11,7 @@ add_executable (chip8
     cpu.cpp
     graphics.cpp
     memory.cpp
+    audio.cpp
 )
 
 target_link_libraries (chip8 SDL2)

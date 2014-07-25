@@ -10,6 +10,7 @@
 #include "cpu.h"
 #include "memory.h"
 #include "graphics.h"
+#include "audio.h"
 
 namespace Chip8 {
 
@@ -25,6 +26,7 @@ namespace Chip8 {
         std::unique_ptr<Graphics> _graphics;
         std::unique_ptr<Memory> _memory;
         std::unique_ptr<CPU> _cpu;
+        std::unique_ptr<Audio> _audio;
     };
 
 } // namespace Chip8

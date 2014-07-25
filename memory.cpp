@@ -26,9 +26,11 @@ namespace Chip8 {
     };
 
     Memory::Memory() {
+        // TODO: use memset
         for (int i=0; i<(kMemorySize); i++)
             memory[i] = 0;
 
+        // TODO: use memcpy
         for (int i=0; i<16; i++) {
             memory[kFontSetLocation + i] = kFontSet[i];
         }

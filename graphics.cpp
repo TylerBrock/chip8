@@ -42,6 +42,7 @@ namespace Chip8 {
     void Graphics::set(int x, int y, bool value) {
         //std::cout << "[graphics] settingx: " << x << " settingy: " << y << std::endl;
         gfx[(kGraphicsWidth * y) + x - 1] = value;
+
         _dirty_buffer = true;
     }
 
@@ -77,12 +78,16 @@ namespace Chip8 {
         }
 
         _dirty_buffer = false;
+
         SDL_RenderPresent(_renderer);
     }
 
     void Graphics::clear() {
+        // TODO: use memset
         for (int i=0; i<kGraphicsWidth * kGraphicsHeight; i++)
             gfx[i] = false;
+
+        _dirty_buffer = true;
     }
 
 } // namespace Chip8
