@@ -29,6 +29,8 @@ namespace Chip8 {
         if (_window == nullptr)
             std::cout << "error: " << SDL_GetError() << std::endl;
 
+        _dirty_buffer = false;
+
         clear();
     }
 
@@ -40,6 +42,15 @@ namespace Chip8 {
     void Graphics::set(int x, int y, bool value) {
         //std::cout << "[graphics] settingx: " << x << " settingy: " << y << std::endl;
         gfx[(kGraphicsWidth * y) + x - 1] = value;
+        _dirty_buffer = true;
+    }
+
+    bool Graphics::get(int x, int y) const {
+        return gfx[(kGraphicsWidth * y) + x - 1];
+    }
+
+    bool Graphics::dirty() const {
+        return _dirty_buffer;
     }
 
     void Graphics::refresh() {
@@ -64,6 +75,8 @@ namespace Chip8 {
 
             SDL_RenderFillRect(_renderer, &scaled_pixel);
         }
+
+        _dirty_buffer = false;
         SDL_RenderPresent(_renderer);
     }
 

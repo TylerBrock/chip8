@@ -31,6 +31,7 @@ namespace Chip8 {
         _sound_timer = 0;
         _stack_pointer = 0;
         _index_register = 0;
+
         for (int i=0; i<16; i++) {
             _registers[i] = 0;
         }
@@ -38,10 +39,10 @@ namespace Chip8 {
 
     void CPU::run_cycle() {
         // Decode instruction
-        dump();
+        //dump();
         OpCode op = _m->getByte(_program_counter) << 8 | _m->getByte(_program_counter + 1);
-        std::cout << "Operation at 0x" << std::hex << _program_counter << " -> "
-            << std::setw(4) << int(op) << std::endl;
+        //std::cout << "Operation at 0x" << std::hex << _program_counter << " -> "
+            //<< std::setw(4) << int(op) << std::endl;
 
         Address a = op & kAddressMask;
         uint8_t rx = (op & kRegisterXMask) >> 8;
@@ -163,11 +164,12 @@ namespace Chip8 {
                 break;
 
             case 0xD000: {
-                int x = _registers[(op & kRegisterXMask) >> 8];
-                int y = _registers[(op & kRegisterYMask) >> 4];
+                int x = _registers[rx];
+                int y = _registers[ry];
                 int n = (op & kLastNibble);
 
                 uint16_t sprite_pointer = _index_register;
+                bool xored = false;
 
                 // Height is determined by the last nibble
                 for (int i=0; i < n; i++) {
@@ -180,11 +182,16 @@ namespace Chip8 {
                     //std::cout << "[cpu] Current sprite row: " << (int)sprite_row << std::endl;
 
                     for (int j=0; j<8; j++) {
-                        if (sprite_row & sprite_mask)
-                            _g->set(x + j, y + i, true);
+                        if (sprite_row & sprite_mask) {
+                            bool on = _g->get(x + j, y + i);
+                            if (on) xored = true;
+                            _g->set(x + j, y + i, !on);
+                        }
                         sprite_mask >>= 1;
                     }
                 }
+
+                _registers[0x0F] = xored;
                 _program_counter += 2;
                 break;
             }

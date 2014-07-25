@@ -6,7 +6,7 @@ int main() {
     Chip8::Chip8 chip8;
     std::ifstream program;
     std::cout << "[main] Opening program" << std::endl;
-    program.open("PONG2", std::ifstream::binary);
+    program.open("PONG", std::ifstream::binary);
     if (!program.is_open()) {
         std::cerr << "couldn't open program" << std::endl;
         exit(1);
