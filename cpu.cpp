@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <cstdlib>
 #include <ctime>
+
 #include "cpu.h"
 #include "graphics.h"
 #include "memory.h"
@@ -40,6 +41,7 @@ namespace Chip8 {
     void CPU::run_cycle() {
         // Decode instruction
         OpCode op = _m->getByte(_program_counter) << 8 | _m->getByte(_program_counter + 1);
+
         std::cout << "Operation at 0x" << std::hex << _program_counter << " -> "
             << std::setw(4) << int(op) << std::endl;
 
