@@ -39,10 +39,9 @@ namespace Chip8 {
 
     void CPU::run_cycle() {
         // Decode instruction
-        //dump();
         OpCode op = _m->getByte(_program_counter) << 8 | _m->getByte(_program_counter + 1);
-        //std::cout << "Operation at 0x" << std::hex << _program_counter << " -> "
-            //<< std::setw(4) << int(op) << std::endl;
+        std::cout << "Operation at 0x" << std::hex << _program_counter << " -> "
+            << std::setw(4) << int(op) << std::endl;
 
         Address a = op & kAddressMask;
         uint8_t rx = (op & kRegisterXMask) >> 8;
@@ -79,14 +78,14 @@ namespace Chip8 {
                 break;
 
             case 0x4000:
-                if (rx != (op & kImmediateMask))
+                if (_registers[rx] != (op & kImmediateMask))
                     _program_counter += 4;
                 else
                     _program_counter += 2;
                 break;
 
             case 0x5000:
-                if (rx == ry)
+                if (_registers[rx] == _registers[ry])
                     _program_counter += 4;
                 else
                     _program_counter += 2;
@@ -254,6 +253,9 @@ namespace Chip8 {
                 }
                 _program_counter += 2;
         }
+
+        // Lets check out what is going on inside the registers of the CPU
+        dump();
 
         // Decrement the timers -- because the timers run at the same clock rate as the CPU
         // itself (60hz) this is totally fine.
