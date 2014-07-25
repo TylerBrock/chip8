@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <cstdlib>
+#include <ctime>
 #include "cpu.h"
 #include "graphics.h"
 #include "memory.h"
@@ -22,6 +23,7 @@ namespace Chip8 {
     };
 
     CPU::CPU(Graphics* g, Memory* m) : _g(g), _m(m) {
+        std::srand(std::time(0));
         reset();
     }
 
