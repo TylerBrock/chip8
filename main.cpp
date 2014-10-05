@@ -7,7 +7,7 @@ int main(int argc, char *argv[]) {
     Chip8::Chip8 chip8;
 
     if (argc != 2) {
-        std::cout << "usage: " << argv[0] << "<filename>\n" << std::endl;
+        std::cout << "usage: " << argv[0] << " <filename>\n" << std::endl;
         std::exit(2);
     }
 
