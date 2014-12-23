@@ -9,12 +9,12 @@
 
 namespace Chip8 {
 
-    const uint16_t kOpCodeMask = 0xF000;
-    const uint16_t kAddressMask = 0x0FFF;
+    const uint16_t kOpCodeMask    = 0xF000;
+    const uint16_t kAddressMask   = 0x0FFF;
     const uint16_t kRegisterXMask = 0x0F00;
     const uint16_t kRegisterYMask = 0x00F0;
     const uint16_t kImmediateMask = 0x00FF;
-    const uint16_t kLastNibble = 0x000F;
+    const uint16_t kLastNibble    = 0x000F;
 
     const SDL_Keycode kKeyCodeMap[16] = {
         SDLK_0, SDLK_1, SDLK_2, SDLK_3,
@@ -42,8 +42,9 @@ namespace Chip8 {
         // Decode instruction
         OpCode op = _m->getByte(_program_counter) << 8 | _m->getByte(_program_counter + 1);
 
-        std::cout << "Operation at 0x" << std::hex << _program_counter << " -> "
-            << std::setw(4) << int(op) << std::endl;
+        std::cout << "Operation at 0x"
+            << std::hex << _program_counter << " -> " << std::setw(4) << int(op)
+            << std::endl;
 
         Address a = op & kAddressMask;
         uint8_t rx = (op & kRegisterXMask) >> 8;
