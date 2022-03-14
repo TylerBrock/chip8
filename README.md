@@ -1,4 +1,3 @@
 This is pure garbage that I wrote when learning C++.
 
-- Audio doesn't work
-- Terrible code
+- [X] Audio doesn't work (not implemented)
